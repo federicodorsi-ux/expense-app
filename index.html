@@ -1,8 +1,6 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <script>
-  console.log("SUPABASE:", window.supabase);
-
   const supabase = window.supabase.createClient(
     "https://zcrjawwpdjbbkitfabjj.supabase.co",
     "sb_publishable_Rim_qHCOI5MG_dvowMQfrQ_qY20q7Ul"
@@ -14,17 +12,16 @@
     lista.innerHTML = "";
     let totale = 0;
 
-    const { data: spese, error } = await supabase
+    const { data, error } = await supabase
       .from("spese")
       .select("*");
 
     if (error) {
       console.error(error);
-      alert("Errore nel caricamento dati");
       return;
     }
 
-    spese.forEach(s => {
+    data.forEach(s => {
       const li = document.createElement("li");
       li.textContent = s.nome + ": €" + s.importo;
       lista.appendChild(li);
@@ -38,11 +35,6 @@
     const nome = document.getElementById("nome").value;
     const importo = Number(document.getElementById("importo").value);
 
-    if (!nome || !importo) {
-      alert("Inserisci nome e importo");
-      return;
-    }
-
     const { error } = await supabase
       .from("spese")
       .insert([{ nome, importo }]);
@@ -52,9 +44,6 @@
       alert(error.message);
       return;
     }
-
-    document.getElementById("nome").value = "";
-    document.getElementById("importo").value = "";
 
     render();
   }
