@@ -1,48 +1,45 @@
-<body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  const supabase = window.supabase.createClient(
+    "https://zcrjawwpdjbbkitfabjj.supabase.co",
+    "sb_publishable_Rim_qHCOI5MG_dvowMQfrQ_qY20q7Ul"
+  );
 
-  <h1>Le mie spese</h1>
+  const lista = document.getElementById("lista");
 
-  <input id="nome" placeholder="Nome spesa">
-  <input id="importo" type="number" placeholder="Importo">
-  <button onclick="aggiungiSpesa()">Aggiungi</button>
+  async function render() {
+    lista.innerHTML = "";
+    let totale = 0;
 
-  <ul id="lista"></ul>
-  <h3 id="totale"></h3>
+    const { data: spese } = await supabase
+      .from("spese")
+      .select("*");
 
-  <!-- SCRIPT QUI -->
-  <script>
-    let spese = [
-      { nome: "Affitto", importo: 800 },
-      { nome: "Cibo", importo: 300 },
-      { nome: "Netflix", importo: 15 }
-    ];
+    spese.forEach(s => {
+      const li = document.createElement("li");
+      li.textContent = s.nome + ": €" + s.importo;
+      lista.appendChild(li);
+      totale += s.importo;
+    });
 
-    const lista = document.getElementById("lista");
+    document.getElementById("totale").textContent = "Totale: €" + totale;
+  }
 
-    function render() {
-      lista.innerHTML = "";
-      let totale = 0;
+  async function aggiungiSpesa() {
+    const nome = document.getElementById("nome").value;
+    const importo = Number(document.getElementById("importo").value);
 
-      spese.forEach(s => {
-        const li = document.createElement("li");
-        li.textContent = s.nome + ": €" + s.importo;
-        lista.appendChild(li);
-        totale += s.importo;
-      });
-
-      document.getElementById("totale").textContent = "Totale: €" + totale;
+    if (!nome || !importo) {
+      alert("Inserisci nome e importo");
+      return;
     }
 
-    function aggiungiSpesa() {
-      const nome = document.getElementById("nome").value;
-      const importo = Number(document.getElementById("importo").value);
-
-      spese.push({ nome, importo });
-
-      render();
-    }
+    await supabase.from("spese").insert([
+      { nome, importo }
+    ]);
 
     render();
-  </script>
+  }
 
-</body>
+  render();
+</script>
