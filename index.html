@@ -1,28 +1,34 @@
-<!DOCTYPE html>
-<html>
-  <body>
-    <h1>Le mie spese</h1>
-    <ul id="lista"></ul>
-    <h3 id="totale"></h3>
+<script>
+  let spese = [
+    { nome: "Affitto", importo: 800 },
+    { nome: "Cibo", importo: 300 },
+    { nome: "Netflix", importo: 15 }
+  ];
 
-    <script>
-      const spese = [
-        { nome: "Affitto", importo: 800 },
-        { nome: "Cibo", importo: 300 },
-        { nome: "Netflix", importo: 15 }
-      ];
+  const lista = document.getElementById("lista");
 
-      const lista = document.getElementById("lista");
-      let totale = 0;
+  function render() {
+    lista.innerHTML = "";
+    let totale = 0;
 
-      spese.forEach(s => {
-        const li = document.createElement("li");
-        li.textContent = s.nome + ": €" + s.importo;
-        lista.appendChild(li);
-        totale += s.importo;
-      });
+    spese.forEach(s => {
+      const li = document.createElement("li");
+      li.textContent = s.nome + ": €" + s.importo;
+      lista.appendChild(li);
+      totale += s.importo;
+    });
 
-      document.getElementById("totale").textContent = "Totale: €" + totale;
-    </script>
-  </body>
-</html>
+    document.getElementById("totale").textContent = "Totale: €" + totale;
+  }
+
+  function aggiungiSpesa() {
+    const nome = document.getElementById("nome").value;
+    const importo = Number(document.getElementById("importo").value);
+
+    spese.push({ nome, importo });
+
+    render();
+  }
+
+  render();
+</script>
