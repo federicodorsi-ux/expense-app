@@ -9,7 +9,7 @@
 
   <input id="nome" placeholder="Nome spesa">
   <input id="importo" type="number" placeholder="Importo">
-  <button onclick="aggiungiSpesa()">Aggiungi</button>
+  <button id="btn">Aggiungi</button>
 
   <ul id="lista"></ul>
   <h3 id="totale"></h3>
@@ -18,28 +18,28 @@
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
   <script>
-    // crea client
-    const supabase = window.supabase.createClient(
+    // NON usare window.supabase
+    const supabaseClient = supabase.createClient(
       "https://zcrjawwpdjbbkitfabjj.supabase.co",
       "sb_publishable_Rim_qHCOI5MG_dvowMQfrQ_qY20q7Ul"
     );
 
     const lista = document.getElementById("lista");
+    const btn = document.getElementById("btn");
 
     async function render() {
       lista.innerHTML = "";
       let totale = 0;
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from("spese")
         .select("*");
 
       if (error) {
-        console.error("SELECT ERROR:", error);
+        console.error(error);
+        alert("Errore DB");
         return;
       }
-
-      if (!data) return;
 
       data.forEach(s => {
         const li = document.createElement("li");
@@ -56,26 +56,28 @@
       const importo = Number(document.getElementById("importo").value);
 
       if (!nome || !importo) {
-        alert("Inserisci nome e importo");
+        alert("Inserisci dati");
         return;
       }
 
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from("spese")
         .insert([{ nome, importo }]);
 
       if (error) {
-        console.error("INSERT ERROR:", error);
+        console.error(error);
         alert(error.message);
         return;
       }
 
-      // reset input
       document.getElementById("nome").value = "";
       document.getElementById("importo").value = "";
 
       render();
     }
+
+    // invece di onclick (più stabile)
+    btn.addEventListener("click", aggiungiSpesa);
 
     render();
   </script>
