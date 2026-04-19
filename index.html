@@ -1,45 +1,81 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script>
-  const supabase = window.supabase.createClient(
-    "https://zcrjawwpdjbbkitfabjj.supabase.co",
-    "sb_publishable_Rim_qHCOI5MG_dvowMQfrQ_qY20q7Ul"
-  );
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Expense App</title>
+</head>
 
-  const lista = document.getElementById("lista");
+<body>
+  <h1>Le mie spese</h1>
 
-  async function render() {
-    lista.innerHTML = "";
-    let totale = 0;
+  <input id="nome" placeholder="Nome spesa">
+  <input id="importo" type="number" placeholder="Importo">
+  <button onclick="aggiungiSpesa()">Aggiungi</button>
 
-    const { data: spese } = await supabase
-      .from("spese")
-      .select("*");
+  <ul id="lista"></ul>
+  <h3 id="totale"></h3>
 
-    spese.forEach(s => {
-      const li = document.createElement("li");
-      li.textContent = s.nome + ": €" + s.importo;
-      lista.appendChild(li);
-      totale += s.importo;
-    });
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
-    document.getElementById("totale").textContent = "Totale: €" + totale;
-  }
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://zcrjawwpdjbbkitfabjj.supabase.co",
+      "sb_publishable_Rim_qHCOI5MG_dvowMQfrQ_qY20q7Ul"
+    );
 
-  async function aggiungiSpesa() {
-    const nome = document.getElementById("nome").value;
-    const importo = Number(document.getElementById("importo").value);
+    const lista = document.getElementById("lista");
 
-    if (!nome || !importo) {
-      alert("Inserisci nome e importo");
-      return;
+    async function render() {
+      lista.innerHTML = "";
+      let totale = 0;
+
+      const { data: spese, error } = await supabase
+        .from("spese")
+        .select("*");
+
+      if (error) {
+        console.error(error);
+        alert("Errore nel caricamento dati");
+        return;
+      }
+
+      spese.forEach(s => {
+        const li = document.createElement("li");
+        li.textContent = s.nome + ": €" + s.importo;
+        lista.appendChild(li);
+        totale += s.importo;
+      });
+
+      document.getElementById("totale").textContent = "Totale: €" + totale;
     }
 
-    await supabase.from("spese").insert([
-      { nome, importo }
-    ]);
+    async function aggiungiSpesa() {
+      const nome = document.getElementById("nome").value;
+      const importo = Number(document.getElementById("importo").value);
+
+      if (!nome || !importo) {
+        alert("Inserisci nome e importo");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("spese")
+        .insert([{ nome, importo }]);
+
+      if (error) {
+        console.error(error);
+        alert("Errore salvataggio");
+        return;
+      }
+
+      // reset input
+      document.getElementById("nome").value = "";
+      document.getElementById("importo").value = "";
+
+      render();
+    }
 
     render();
-  }
-
-  render();
-</script>
+  </script>
+</body>
+</html>
