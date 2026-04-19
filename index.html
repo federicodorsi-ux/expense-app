@@ -1,38 +1,48 @@
-<input id="nome" placeholder="Nome spesa">
-<input id="importo" type="number" placeholder="Importo">
-<button onclick="aggiungiSpesa()">Aggiungi</button>
+<body>
 
-<script>
-  let spese = [
-    { nome: "Affitto", importo: 800 },
-    { nome: "Cibo", importo: 300 },
-    { nome: "Netflix", importo: 15 }
-  ];
+  <h1>Le mie spese</h1>
 
-  const lista = document.getElementById("lista");
+  <input id="nome" placeholder="Nome spesa">
+  <input id="importo" type="number" placeholder="Importo">
+  <button onclick="aggiungiSpesa()">Aggiungi</button>
 
-  function render() {
-    lista.innerHTML = "";
-    let totale = 0;
+  <ul id="lista"></ul>
+  <h3 id="totale"></h3>
 
-    spese.forEach(s => {
-      const li = document.createElement("li");
-      li.textContent = s.nome + ": €" + s.importo;
-      lista.appendChild(li);
-      totale += s.importo;
-    });
+  <!-- SCRIPT QUI -->
+  <script>
+    let spese = [
+      { nome: "Affitto", importo: 800 },
+      { nome: "Cibo", importo: 300 },
+      { nome: "Netflix", importo: 15 }
+    ];
 
-    document.getElementById("totale").textContent = "Totale: €" + totale;
-  }
+    const lista = document.getElementById("lista");
 
-  function aggiungiSpesa() {
-    const nome = document.getElementById("nome").value;
-    const importo = Number(document.getElementById("importo").value);
+    function render() {
+      lista.innerHTML = "";
+      let totale = 0;
 
-    spese.push({ nome, importo });
+      spese.forEach(s => {
+        const li = document.createElement("li");
+        li.textContent = s.nome + ": €" + s.importo;
+        lista.appendChild(li);
+        totale += s.importo;
+      });
+
+      document.getElementById("totale").textContent = "Totale: €" + totale;
+    }
+
+    function aggiungiSpesa() {
+      const nome = document.getElementById("nome").value;
+      const importo = Number(document.getElementById("importo").value);
+
+      spese.push({ nome, importo });
+
+      render();
+    }
 
     render();
-  }
+  </script>
 
-  render();
-</script>
+</body>
