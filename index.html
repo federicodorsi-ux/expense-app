@@ -15,7 +15,8 @@
   <h3 id="totale"></h3>
 
   <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  console.log("SUPABASE:", window.supabase);
 
   <script>
     const supabase = window.supabase.createClient(
