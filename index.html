@@ -1,82 +1,63 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Expense App</title>
-</head>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-<body>
-  <h1>Le mie spese</h1>
+<script>
+  console.log("SUPABASE:", window.supabase);
 
-  <input id="nome" placeholder="Nome spesa">
-  <input id="importo" type="number" placeholder="Importo">
-  <button onclick="aggiungiSpesa()">Aggiungi</button>
+  const supabase = window.supabase.createClient(
+    "https://zcrjawwpdjbbkitfabjj.supabase.co",
+    "sb_publishable_Rim_qHCOI5MG_dvowMQfrQ_qY20q7Ul"
+  );
 
-  <ul id="lista"></ul>
-  <h3 id="totale"></h3>
+  const lista = document.getElementById("lista");
 
-  <!-- Supabase -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  
-  <script>
-    console.log("SUPABASE:", window.supabase);
-    const supabase = window.supabase.createClient(
-      "https://zcrjawwpdjbbkitfabjj.supabase.co",
-      "sb_publishable_Rim_qHCOI5MG_dvowMQfrQ_qY20q7Ul"
-    );
+  async function render() {
+    lista.innerHTML = "";
+    let totale = 0;
 
-    const lista = document.getElementById("lista");
+    const { data: spese, error } = await supabase
+      .from("spese")
+      .select("*");
 
-    async function render() {
-      lista.innerHTML = "";
-      let totale = 0;
-
-      const { data: spese, error } = await supabase
-        .from("spese")
-        .select("*");
-
-      if (error) {
-        console.error(error);
-        alert("Errore nel caricamento dati");
-        return;
-      }
-
-      spese.forEach(s => {
-        const li = document.createElement("li");
-        li.textContent = s.nome + ": €" + s.importo;
-        lista.appendChild(li);
-        totale += s.importo;
-      });
-
-      document.getElementById("totale").textContent = "Totale: €" + totale;
+    if (error) {
+      console.error(error);
+      alert("Errore nel caricamento dati");
+      return;
     }
 
-    async function aggiungiSpesa() {
-      const nome = document.getElementById("nome").value;
-      const importo = Number(document.getElementById("importo").value);
+    spese.forEach(s => {
+      const li = document.createElement("li");
+      li.textContent = s.nome + ": €" + s.importo;
+      lista.appendChild(li);
+      totale += s.importo;
+    });
 
-      if (!nome || !importo) {
-        alert("Inserisci nome e importo");
-        return;
-      }
+    document.getElementById("totale").textContent = "Totale: €" + totale;
+  }
 
-      const { error } = await supabase
-        .from("spese")
-        .insert([{ nome, importo }]);
+  async function aggiungiSpesa() {
+    const nome = document.getElementById("nome").value;
+    const importo = Number(document.getElementById("importo").value);
 
-      if (error) {
-        console.error(error);
-        alert("Errore salvataggio");
-        return;
-      }
-
-      // reset input
-      document.getElementById("nome").value = "";
-      document.getElementById("importo").value = "";
-
-      render();
+    if (!nome || !importo) {
+      alert("Inserisci nome e importo");
+      return;
     }
+
+    const { error } = await supabase
+      .from("spese")
+      .insert([{ nome, importo }]);
+
+    if (error) {
+      console.error(error);
+      alert(error.message);
+      return;
+    }
+
+    document.getElementById("nome").value = "";
+    document.getElementById("importo").value = "";
 
     render();
-  </script>
-</body>
-</html>
+  }
+
+  render();
+</script>
